@@ -43,11 +43,9 @@
 
 (defun colorp ()
   (let ((term (getenv "TERM" "color")))
-    (if (or
+    (not (or
      (equal term "9term")
-     (equal term "dumb"))
-    nil
-    t)))
+     (equal term "dumb")))))
 
 (defun color-message (message color)
   (if (colorp)
