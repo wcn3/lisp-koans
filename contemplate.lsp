@@ -84,8 +84,8 @@
                      #'(lambda (x) (equalp :pass x))
                      (second k-result))))
     (if all-pass-p
-        (format t "~A has expanded your awareness.~%" koan-name)
-        (format t "~A requires more meditation.~%" koan-name))))
+        (format t "~C[32m~A has expanded your awareness.~C[0m~%" #\esc koan-name #\esc)
+        (format t "~C[31m~A requires more meditation.~C[0m~%" #\esc koan-name #\esc))))
 
 (defun print-koan-group-progress (kg-name kg-results)
   (format t "~%Thinking about ~A~%" kg-name)
@@ -121,7 +121,7 @@
          "  A koan is incomplete.~%"))
   (if (find :fail koan-status)
        (return-from koan-status-message
-         "  A koan is incorrect.~%"))
+         (format nil "~C[31m  A koan is incorrect.~C[0m~%" #\esc #\esc)))
   (if (find :error koan-status)
        (return-from koan-status-message
          "  A koan threw an error.~%"))
