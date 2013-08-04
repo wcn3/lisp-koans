@@ -46,8 +46,8 @@
     (if (or
      (equal term "9term")
      (equal term "dumb"))
-    (return-from colorp nil)))
-  t)
+    nil
+    t)))
 
 (defun color-message (message color)
   (if (colorp)
