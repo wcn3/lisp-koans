@@ -25,6 +25,41 @@
 
 (in-package :lisp-koans)
 
+;; Routines to support color output
+
+(defun getenv (name &optional default)
+	  #+CMU
+    (let ((x (assoc name ext:*environment-list*
+                    :test #'string=)))
+      (if x (cdr x) default))
+    #-CMU
+    (or
+     #+Allegro (sys:getenv name)
+     #+CLISP (ext:getenv name)
+     #+ECL (si:getenv name)
+     #+SBCL (sb-unix::posix-getenv name)
+     #+LISPWORKS (lispworks:environment-variable name)
+     default))
+
+(defun colorp ()
+  (let ((term (getenv "TERM" "color")))
+    (if (or
+     (equal term "9term")
+     (equal term "dumb"))
+    (return-from colorp nil)))
+  t)
+
+(defun color-message (message color)
+  (if (colorp)
+      (format nil "~C~A~A~C[0m~%" #\esc color message #\esc)
+      (format nil "~A~%" message)))
+
+(defun green (message)
+  (color-message message "[32m"))
+
+(defun red (message)
+  (color-message message "[31m"))
+
 ;; .koans file controls which files in *koan-dir-name* are loaded as
 ;; koans to complete
 (defvar *koan-dir-name* "koans")
@@ -84,8 +119,8 @@
                      #'(lambda (x) (equalp :pass x))
                      (second k-result))))
     (if all-pass-p
-        (format t "~C[32m~A has expanded your awareness.~C[0m~%" #\esc koan-name #\esc)
-        (format t "~C[31m~A requires more meditation.~C[0m~%" #\esc koan-name #\esc))))
+	(format t (green (format nil "~A has expanded your awareness." koan-name)))
+	(format t (red (format nil "~A requires more meditation." koan-name))))))
 
 (defun print-koan-group-progress (kg-name kg-results)
   (format t "~%Thinking about ~A~%" kg-name)
@@ -121,7 +156,7 @@
          "  A koan is incomplete.~%"))
   (if (find :fail koan-status)
        (return-from koan-status-message
-         (format nil "~C[31m  A koan is incorrect.~C[0m~%" #\esc #\esc)))
+         (red (format nil "  A koan is incorrect."))))
   (if (find :error koan-status)
        (return-from koan-status-message
          "  A koan threw an error.~%"))
