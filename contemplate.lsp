@@ -42,9 +42,10 @@
      default))
 
 (defun colorp ()
-  (let ((term (getenv "TERM" "color")))
+  (let ((term (getenv "TERM" "dumb")))
     (not (or
      (equal term "9term")
+     (equal term "cygwin")
      (equal term "dumb")))))
 
 (defun color-message (message color)
